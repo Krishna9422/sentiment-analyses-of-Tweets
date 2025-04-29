@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sentiment Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f2f2f2;
+            padding: 30px;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        .tweet-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .tweet-box {
+            background: white;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 8px solid gray;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .POSITIVE { border-left-color: #4CAF50; }
+        .NEGATIVE { border-left-color: #F44336; }
+        .error { color: red; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+    <h2>📊 Tweet Sentiment Dashboard</h2>
+    <form method="POST">
+        <input type="text" name="keyword" placeholder="Enter keyword..." value="{{ keyword }}" required>
+        <button type="submit">Analyze Tweets</button>
+    </form>
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <div class="tweet-section">
+        <div>
+            <h3>👍 Top 10 Positive Tweets</h3>
+            {% for tweet in positive %}
+                <div class="tweet-box POSITIVE">
+                    <p><strong>Confidence:</strong> {{ "%.2f"|format(tweet.score) }}</p>
+                    <p>{{ tweet.text }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        <div>
+            <h3>👎 Top 10 Negative Tweets</h3>
+            {% for tweet in negative %}
+                <div class="tweet-box NEGATIVE">
+                    <p><strong>Confidence:</strong> {{ "%.2f"|format(tweet.score) }}</p>
+                    <p>{{ tweet.text }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</body>
+</html>
