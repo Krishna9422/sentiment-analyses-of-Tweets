@@ -9,7 +9,7 @@ import tweepy.errors
 app = Flask(__name__)
 
 # Twitter API v2 setup
-BEARER_TOKEN = ""
+BEARER_TOKEN = "1914767622635433984-QJqQNvrnIj6SzPjLxI4786t85QJw0r"
 client = tweepy.Client(bearer_token=BEARER_TOKEN)
 
 # Load Hugging Face sentiment model
