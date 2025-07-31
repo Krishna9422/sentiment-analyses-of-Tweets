@@ -9,7 +9,7 @@ import tweepy.errors
 app = Flask(__name__)
 
 # Twitter API v2 setup
-BEARER_TOKEN = "1914767622635433984-QJqQNvrnIj6SzPjLxI4786t85QJw0r"
+BEARER_TOKEN = "AAAAAAAAAAAAAAAAAAAAAJ0r0wEAAAAAXoIsyPUGrd4HFwJ9S2Or6U9NrJk%3DE6WK31xTniBiXUoqY7LQbeu2aYGDna19wLN9SrqWn2hDsHSs6h"
 client = tweepy.Client(bearer_token=BEARER_TOKEN)
 
 # Load Hugging Face sentiment model
@@ -65,6 +65,8 @@ def fetch_and_classify_tweets(keyword, count=20):
     plt.legend()
 
     # Save plot in static folder
+    if not os.path.exists("static"):
+        os.makedirs("static")
     plot_filename = f"plot_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
     plot_path = os.path.join("static", plot_filename)
     plt.savefig(plot_path)
