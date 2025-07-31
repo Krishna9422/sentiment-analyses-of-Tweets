@@ -1,14 +1,29 @@
 import tweepy
 from flask import Flask, render_template, request
-from transformers import pipeline
+import requests
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Load Hugging Face sentiment model
-sentiment_pipeline = pipeline("sentiment-analysis")
+# Hugging Face Inference API endpoint (no token needed for small usage)
+HF_API_URL = "https://api-inference.huggingface.co/models/distilbert-base-uncased-finetuned-sst-2-english"
+
+def get_sentiment(text):
+    try:
+        response = requests.post(
+            HF_API_URL,
+            headers={"Accept": "application/json"},
+            json={"inputs": text}
+        )
+        result = response.json()
+        if isinstance(result, list) and result:
+            return result[0][0]  # {'label': 'POSITIVE', 'score': 0.98}
+        else:
+            return {"label": "UNKNOWN", "score": 0}
+    except Exception as e:
+        return {"label": "ERROR", "score": 0}
 
 def fetch_and_classify_tweets(bearer_token, keyword, count=20):
     try:
@@ -29,7 +44,7 @@ def fetch_and_classify_tweets(bearer_token, keyword, count=20):
 
     for tweet in tweets[:count]:
         text = tweet.text
-        result = sentiment_pipeline(text[:512])[0]
+        result = get_sentiment(text[:512])
         entry = {
             "text": text,
             "sentiment": result["label"],
@@ -79,10 +94,7 @@ def dashboard():
         bearer_token = request.form.get("bearer_token", "")
 
         if tweet_text:
-            try:
-                sentiment_result = sentiment_pipeline(tweet_text[:512])[0]
-            except Exception as e:
-                error = f"Error analyzing tweet: {str(e)}"
+            sentiment_result = get_sentiment(tweet_text[:512])
 
         if bearer_token and keyword:
             positive, negative, plot_path, fetch_error = fetch_and_classify_tweets(bearer_token, keyword)
