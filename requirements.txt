@@ -1,3 +1,4 @@
+python_version == "3.12.*"
 Flask==3.0.3
 tweepy==4.14.0
 matplotlib==3.8.4
