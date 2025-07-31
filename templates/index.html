@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tweet Sentiment Analyzer</title>
+    <style>
+        /* body {
+            font-family: Arial;
+            background: #f7f7f7;
+            padding: 20px;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            font-size: 16px;
+            margin-top: 15px;
+            border-radius: 6px;
+        }
+        .tweet-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .tweet-box {
+            background: #fff;
+            padding: 15px;
+            margin-top: 10px;
+            border-left: 8px solid gray;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .POSITIVE { border-left-color: #4CAF50; }
+        .NEGATIVE { border-left-color: #F44336; }
+        .error { color: red; margin-top: 10px; } */
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient to right, #ece9e6, #ffffff; /* Subtle gradient background */
+    padding: 20px;
+    color: #333;
+    line-height: 1.6;
+}
+
+h2, h3 {
+    color: #0056b3; /* A strong blue for headings */
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+}
+
+form {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1); /* More pronounced shadow */
+    margin: 0 auto 40px auto; /* Center the form and add more bottom margin */
+    max-width: 700px; /* Limit form width */
+    border: 1px solid #e0e0e0;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #555;
+    font-size: 1.05em;
+}
+
+input[type="text"],
+textarea {
+    width: calc(100% - 20px); /* Account for padding */
+    padding: 12px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #b0b0b0;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.08); /* Inner shadow for depth */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+    border-color: #007BFF;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25); /* Focus glow */
+    outline: none;
+}
+
+button {
+    padding: 12px 25px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    font-size: 18px;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: block; /* Make button full width if desired, or adjust */
+    width: 100%;
+    font-weight: 600;
+}
+
+button:hover {
+    background: #0056b3; /* Darker blue on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+.tweet-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.tweet-box {
+    background: #ffffff;
+    padding: 20px;
+    margin-top: 15px;
+    border-left: 8px solid; /* Solid border for sentiment color */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tweet-box:hover {
+    transform: translateY(-5px); /* Lift on hover */
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+}
+
+.tweet-box p {
+    margin: 5px 0;
+    font-size: 0.95em;
+}
+
+.tweet-box strong {
+    color: #444;
+}
+
+.POSITIVE {
+    border-left-color: #28a745; /* Green for positive */
+}
+
+.NEGATIVE {
+    border-left-color: #dc3545; /* Red for negative */
+}
+
+.error {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 600;
+}
+
+img {
+    display: block;
+    margin: 30px auto; /* Center the image */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+}
+    </style>
+</head>
+<body>
+
+    <h2>🧠 Tweet Sentiment Analyzer</h2>
+
+    <form method="POST">
+        <label><strong>Paste a Tweet to Analyze:</strong></label>
+        <textarea name="tweet_text" rows="3" placeholder="Paste tweet here...">{{ tweet_text }}</textarea>
+
+        <label><strong>Twitter Bearer Token:</strong></label>
+        <input type="text" name="bearer_token" placeholder="Enter Twitter API Bearer Token..." value="{{ bearer_token }}">
+
+        <label><strong>Keyword for Twitter Analysis:</strong></label>
+        <input type="text" name="keyword" placeholder="Enter keyword for tweets..." value="{{ keyword }}">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if sentiment_result %}
+        <h3>🧾 Tweet Sentiment Result</h3>
+        <div class="tweet-box {{ sentiment_result.label }}">
+            <p><strong>Sentiment:</strong> {{ sentiment_result.label }}</p>
+            <p><strong>Confidence:</strong> {{ "%.2f"|format(sentiment_result.score) }}</p>
+        </div>
+    {% endif %}
+
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+
+    {% if positive or negative %}
+        <h3>🔍 Top Tweets for "{{ keyword }}"</h3>
+        <div class="tweet-section">
+            <div>
+                <h3>👍 Top 5 Positive</h3>
+                {% for tweet in positive %}
+                    <div class="tweet-box POSITIVE">
+                        <p><strong>Confidence:</strong> {{ "%.2f"|format(tweet.score) }}</p>
+                        <p>{{ tweet.text }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+            <div>
+                <h3>👎 Top 5 Negative</h3>
+                {% for tweet in negative %}
+                    <div class="tweet-box NEGATIVE">
+                        <p><strong>Confidence:</strong> {{ "%.2f"|format(tweet.score) }}</p>
+                        <p>{{ tweet.text }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if plot_path %}
+            <h3>📈 Sentiment Confidence Chart</h3>
+            <img src="{{ plot_path }}" alt="Sentiment Chart" style="max-width: 600px;">
+        {% endif %}
+    {% endif %}
+
+</body>
+</html>
